@@ -1,0 +1,119 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Len's - SAV
+{% endblock %}
+
+{% block stylesheets %}
+	<link rel="stylesheet" href="/css/index.css">
+{% endblock %}
+
+{% block body %}
+
+	<header>
+		<img src="/img/logo.svg" alt="logo" width="400">
+	</header>
+	<form action="{{path('home')}}" method="POST">
+		<div>
+			<p>Renseignez votre numéro de commande</p>
+			<div class="search"><input type="text" name="numero" id="numero" placeholder="Ex : F905A123456">
+
+				<button type="submit">Rechercher</button>
+			</div>
+
+		</div>
+	</form>
+
+
+	<main>
+		<div class="container">
+
+
+			{% if numero != null %}
+
+
+				{% if cmd != null and cmd.getSavs() | length > 0 %}
+					<p>
+						<b>{{cmd.numero}}
+							:</b>
+
+					</p>
+					{% set progress = 0 %}
+
+
+					{% for sav in cmd.getSavs() %}
+						{% if sav.resultat.id == 10 %}
+							{% set progress = 50 %}
+						{% elseif sav.resultat.id == 11 %}
+							{% set progress = 100 %}
+						{% endif %}
+
+						<div class="progress-bar">
+							<div class="progress-line">
+								<div class="current-progress" style="width:{{progress}}%"></div>
+							</div>
+							<div class="progress-step active">
+								<img src="/img/process1.png" alt="processing" width="50">
+
+							</div>
+
+
+							<div class="progress-step {% if sav.resultat.id in [11,10] %}active{% endif %}">
+
+
+								{% if sav.resultat.id in [11,10] %}
+
+									<img src="/img/reply-white.svg" alt="" width="50">
+
+
+								{% else %}
+									<img src="/img/reply.svg" alt="" width="50">
+
+
+								{% endif %}
+
+							</div>
+
+
+							<div class="progress-step {% if sav.resultat.id in [11] %}active{% endif %}">
+								{% if sav.resultat.id == 11 %}
+									<img src="/img/check-white.svg" alt="check" width="50">
+								{% else %}
+									<img src="/img/check.svg" alt="check" width="50">
+
+
+								{% endif %}
+							</div>
+
+
+						</div>
+						<div class="descr">
+							<div>En cours de
+								<br>
+								traitement</div>
+
+							<div>Retour en Atelier</div>
+
+							<div>Terminée</div>
+						</div>
+
+					{% endfor %}
+
+				{% elseif cmd.getSavs() | length == 0 %}
+					<p class="noSav">Vous n'avez pas de Sav sur cette commande</p>
+
+				{% else %}
+
+
+					<p class="error">Le numéro est invalide</p>
+
+				{% endif %}
+
+			{% else %}
+				<p>Où trouvez mon numero</p>
+
+			{% endif %}
+		</div>
+
+
+	</main>
+{% endblock %}
